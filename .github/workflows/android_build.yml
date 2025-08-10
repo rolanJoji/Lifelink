@@ -19,13 +19,13 @@ jobs:
         with:
           path: |
             godot
-            ~/.local/share/godot/export_templates/4.3.1.stable
-          key: godot-4.3.1-${{ hashFiles('*.tpz', '*.zip') }}
+            ~/.local/share/godot/export_templates/4.4.1.stable
+          key: godot-4.4.1-${{ hashFiles('*.tpz', '*.zip') }}
 
       - name: Download Godot 4.3.1 Headless
         if: steps.cache.outputs.cache-hit != 'true'
         run: |
-          wget --tries=3 --waitretry=5 https://github.com/godotengine/godot/releases/download/4.4.1-stable/Godot_v4.4.1-stable_linux.x86_64.zip -O godot.zip || \
+          wget --tries=3 --waitretry=5 https://github.com/godotengine/godot/releases/download/4.4.1-stable/Godot_v4.4.1-stable_linux.x86_64.zip -O godot.zip
           unzip godot.zip godot
           chmod +x godot
 
