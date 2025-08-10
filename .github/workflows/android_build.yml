@@ -27,9 +27,8 @@ jobs:
         run: |
           wget https://github.com/godotengine/godot/releases/download/4.4.1-stable/Godot_v4.4.1-stable_linux.x86_64.zip
           unzip Godot_v4.4.1-stable_linux.x86_64.zip
-          cd Godot_v4.4.1-stable_linux.x86_64 ~/godot
-          chmod +x ~/godot
           cd ~/godot
+          chmod +x Godot_v4.4.1-stable_linux.x86_64
           .~/Godot_v4.4.1-stable_linux.x86_64
           cd ~
 
