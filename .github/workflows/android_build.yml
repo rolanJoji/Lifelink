@@ -22,15 +22,14 @@ jobs:
             ~/.local/share/godot/export_templates/4.4.1.stable
           key: godot-4.4.1-${{ hashFiles('*.tpz', '*.zip') }}
 
-      - name: Download Godot 4.3.1 Headless
+      - name: Download Godot 4.4.1 Headless
         if: steps.cache.outputs.cache-hit != 'true'
         run: |
-          wget https://github.com/godotengine/godot/releases/download/4.4.1-stable/Godot_v4.4.1-stable_linux.x86_64.zip
-          unzip Godot_v4.4.1-stable_linux.x86_64.zip ~/godot
-          cd ~/godot
-          chmod +x Godot_v4.4.1-stable_linux.x86_64
+          wget https://github.com/godotengine/godot/releases/download/4.4.1-stable/Godot_v4.4.1-stable_linux.x86_64.zip -o godot.zip
+          unzip godot.zip
+          chmod +x ~/Godot_v4.4.1-stable_linux.x86_64
           .~/Godot_v4.4.1-stable_linux.x86_64
-          cd ~
+          
 
       - name: Download Android Export Templates
         if: steps.cache.outputs.cache-hit != 'true'
