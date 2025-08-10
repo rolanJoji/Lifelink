@@ -26,7 +26,6 @@ jobs:
         if: steps.cache.outputs.cache-hit != 'true'
         run: |
           wget --tries=3 --waitretry=5 https://github.com/godotengine/godot/releases/download/4.3.1-stable/Godot_v4.3.1-stable_linux.x86_64.zip -O godot.zip || \
-          wget --tries=3 --waitretry=5 https://downloads.tuxfamily.org/godotengine/4.3.1/Godot_v4.3.1-stable_linux.x86_64.zip -O godot.zip || { echo "Download failed from all mirrors"; exit 1; }
           unzip godot.zip
           mv Godot_v4.3.1-stable_linux.x86_64 godot
           chmod +x godot
