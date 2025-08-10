@@ -27,7 +27,6 @@ jobs:
         run: |
           wget --tries=3 --waitretry=5 https://github.com/godotengine/godot/releases/download/4.4.1-stable/Godot_v4.4.1-stable_linux.x86_64.zip -O godot.zip || \
           unzip godot.zip godot
-          cd godot
           chmod +x godot
 
       - name: Download Android Export Templates
