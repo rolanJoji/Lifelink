@@ -6,55 +6,43 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
 
-      - name: Install Java & Android SDK
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Install dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y openjdk-17-jdk wget unzip tar
+          sudo apt-get install -y openjdk-17-jdk wget unzip
 
-      - name: Cache Godot and Templates
-        uses: actions/cache@v3
-        with:
-          path: |
-            godot
-            ~/.local/share/godot/export_templates/4.4.1.stable
-          key: godot-4.4.1-${{ hashFiles('*.tpz', '*.zip') }}
+      - name: Download Godot 4.4.1
+        run: wget https://github.com/godotengine/godot/releases/download/4.4.1-stable/Godot_v4.4.1-stable_linux.x86_64.zip
 
-      - name: Download Godot 4.4.1 Headless
-        if: steps.cache.outputs.cache-hit != 'true'
+      - name: Unzip Godot
+        run: unzip Godot_v4.4.1-stable_linux.x86_64.zip
+
+      - name: Rename Godot executable
+        run: mv Godot_v4.4.1-stable_linux.x86_64 Godot
+
+      - name: Make Godot executable
+        run: chmod +x Godot
+
+      - name: Download Android export templates
         run: |
-          wget https://github.com/godotengine/godot/releases/download/4.4.1-stable/Godot_v4.4.1-stable_linux.x86_64.zip -o ~/godot.zip ||
-          unzip ~/godot.zip
-          chmod +x ~/Godot_v4.4.1-stable_linux.x86_64
-          .~/Godot_v4.4.1-stable_linux.x86_64
-          
+          wget https://downloads.tuxfamily.org/godotengine/export_templates/4.4.1/Godot_v4.4.1-stable_export_templates.tpz
+          unzip Godot_v4.4.1-stable_export_templates.tpz -d ~/.local/share/godot/templates/4.4.1/
 
-      - name: Download Android Export Templates
-        if: steps.cache.outputs.cache-hit != 'true'
+      - name: Decode keystore
         run: |
-          wget --tries=3 --waitretry=5 https://github.com/godotengine/godot/releases/download/4.4.1-stable/Godot_v4.3.1-stable_export_templates.tpz -O templates.tpz || \
-          wget --tries=3 --waitretry=5 https://downloads.tuxfamily.org/godotengine/4.3.1/Godot_v4.4.1-stable_export_templates.tpz -O templates.tpz || { echo "Download failed from all mirrors"; exit 1; }
-          mkdir -p ~/.local/share/godot/export_templates/4.4.1.stable
-          tar -xvf templates.tpz -C ~/.local/share/godot/export_templates/4.4.1.stable
-
-      - name: Restore Keystore
-        run: |
-          echo "$KEYSTORE_B64" | base64 --decode > mykeystore.jks
-
-      - name: Debug Environment
-        run: |
-          ls -la
-          java -version
-          ./godot --version
+          echo "$KEYSTORE_B64" | base64 -d > mykeystore.jks
 
       - name: Build APK
         run: |
-          ./godot --headless --export-release "Android" LifeLink_$(date +%Y%m%d_%H%M).apk
+          ./Godot --headless --export "Android" "builds/Lifelink.apk" --sign "mykeystore.jks" "$KEYSTORE_PASSWORD" "$KEY_ALIAS" "$KEY_PASSWORD"
 
-      - name: Upload APK
-        uses: actions/upload-artifact@v4
+      - name: Upload APK as artifact
+        uses: actions/upload-artifact@v3
         with:
-          name: lifelink-apk
-          path: "*.apk"
+          name: Lifelink-APK
+          path: builds/Lifelink.apk
