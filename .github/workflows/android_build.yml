@@ -27,10 +27,11 @@ jobs:
         run: |
           wget https://github.com/godotengine/godot/releases/download/4.4.1-stable/Godot_v4.4.1-stable_linux.x86_64.zip
           unzip Godot_v4.4.1-stable_linux.x86_64.zip
-          cd Godot_v4.4.1-stable_linux.x86_64
-          chmod +x Godot_v4.4.1-stable_linux.x86_64
-          cd ~
+          cd Godot_v4.4.1-stable_linux.x86_64 ~/godot
+          chmod +x ~/godot
+          cd ~/godot
           .~/Godot_v4.4.1-stable_linux.x86_64
+          cd ~
 
       - name: Download Android Export Templates
         if: steps.cache.outputs.cache-hit != 'true'
