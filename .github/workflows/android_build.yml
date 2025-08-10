@@ -14,22 +14,38 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y openjdk-17-jdk wget unzip tar
 
+      - name: Cache Godot and Templates
+        uses: actions/cache@v3
+        with:
+          path: |
+            godot
+            ~/.local/share/godot/export_templates/4.3.stable
+          key: godot-4.3-${{ hashFiles('*.tpz', '*.zip') }}
+
       - name: Download Godot 4.3 Headless
+        if: steps.cache.outputs.cache-hit != 'true'
         run: |
-          wget https://downloads.tuxfamily.org/godotengine/4.3/Godot_v4.3-stable_linux.x86_64.zip -O godot.zip
+          wget --tries=3 --waitretry=5 https://downloads.tuxfamily.org/godotengine/4.3/Godot_v4.3-stable_linux.x86_64.zip -O godot.zip || { echo "Download failed after retries"; exit 1; }
           unzip godot.zip
           mv Godot_v4.3-stable_linux.x86_64 godot
           chmod +x godot
 
       - name: Download Android Export Templates
+        if: steps.cache.outputs.cache-hit != 'true'
         run: |
-          wget https://downloads.tuxfamily.org/godotengine/4.3/Godot_v4.3-stable_export_templates.tpz -O templates.tpz
+          wget --tries=3 --waitretry=5 https://downloads.tuxfamily.org/godotengine/4.3/Godot_v4.3-stable_export_templates.tpz -O templates.tpz || { echo "Download failed after retries"; exit 1; }
           mkdir -p ~/.local/share/godot/export_templates/4.3.stable
           tar -xvf templates.tpz -C ~/.local/share/godot/export_templates/4.3.stable
 
       - name: Restore Keystore
         run: |
           echo "$KEYSTORE_B64" | base64 --decode > mykeystore.jks
+
+      - name: Debug Environment
+        run: |
+          ls -la
+          java -version
+          ./godot --version
 
       - name: Build APK
         run: |
