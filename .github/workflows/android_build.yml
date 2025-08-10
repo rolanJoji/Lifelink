@@ -19,23 +19,23 @@ jobs:
         with:
           path: |
             godot
-            ~/.local/share/godot/export_templates/4.3.stable
-          key: godot-4.3-${{ hashFiles('*.tpz', '*.zip') }}
+            ~/.local/share/godot/export_templates/4.3.1.stable
+          key: godot-4.3.1-${{ hashFiles('*.tpz', '*.zip') }}
 
-      - name: Download Godot 4.3 Headless
+      - name: Download Godot 4.3.1 Headless
         if: steps.cache.outputs.cache-hit != 'true'
         run: |
-          wget --tries=3 --waitretry=5 https://downloads.tuxfamily.org/godotengine/4.3/Godot_v4.3-stable_linux.x86_64.zip -O godot.zip || { echo "Download failed after retries"; exit 1; }
+          wget --tries=3 --waitretry=5 https://downloads.tuxfamily.org/godotengine/4.3.1/Godot_v4.3.1-stable_linux.x86_64.zip -O godot.zip || { echo "Download failed after retries"; exit 1; }
           unzip godot.zip
-          mv Godot_v4.3-stable_linux.x86_64 godot
+          mv Godot_v4.3.1-stable_linux.x86_64 godot
           chmod +x godot
 
       - name: Download Android Export Templates
         if: steps.cache.outputs.cache-hit != 'true'
         run: |
-          wget --tries=3 --waitretry=5 https://downloads.tuxfamily.org/godotengine/4.3/Godot_v4.3-stable_export_templates.tpz -O templates.tpz || { echo "Download failed after retries"; exit 1; }
-          mkdir -p ~/.local/share/godot/export_templates/4.3.stable
-          tar -xvf templates.tpz -C ~/.local/share/godot/export_templates/4.3.stable
+          wget --tries=3 --waitretry=5 https://downloads.tuxfamily.org/godotengine/4.3.1/Godot_v4.3.1-stable_export_templates.tpz -O templates.tpz || { echo "Download failed after retries"; exit 1; }
+          mkdir -p ~/.local/share/godot/export_templates/4.3.1.stable
+          tar -xvf templates.tpz -C ~/.local/share/godot/export_templates/4.3.1.stable
 
       - name: Restore Keystore
         run: |
