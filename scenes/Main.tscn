@@ -1,0 +1,10 @@
+[gd_scene load_steps=2 format=3]
+
+[node name="Main" type="Node2D"]
+[node name="Mochi" type="Sprite2D" parent="."]
+texture = ExtResource("res://assets/mochi.png")
+position = Vector2(128, 128)
+
+[node name="Pip" type="Sprite2D" parent="."]
+texture = ExtResource("res://assets/pip.png")
+position = Vector2(384, 128)

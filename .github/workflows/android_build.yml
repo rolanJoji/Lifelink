@@ -1,0 +1,42 @@
+name: Build Android APK
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Install Java & Android SDK
+        run: |
+          sudo apt-get update
+          sudo apt-get install openjdk-17-jdk wget unzip tar -y
+
+      - name: Download Godot 4.3 Headless
+        run: |
+          wget https://downloads.tuxfamily.org/godotengine/4.3/Godot_v4.3-stable_linux.x86_64.zip -O godot.zip
+          unzip godot.zip
+          mv Godot_v4.3-stable_linux.x86_64 godot
+          chmod +x godot
+
+      - name: Download Android Export Templates
+        run: |
+          wget https://downloads.tuxfamily.org/godotengine/4.3/Godot_v4.3-stable_export_templates.tpz -O templates.tpz
+          mkdir -p ~/.local/share/godot/export_templates/4.3.stable
+          tar -xvf templates.tpz -C ~/.local/share/godot/export_templates/4.3.stable
+
+      - name: Restore Keystore
+        run: |
+          echo "$KEYSTORE_B64" | base64 --decode > mykeystore.jks
+
+      - name: Build APK
+        run: |
+          ./godot --headless --export-release "Android" LifeLink_$(date +%Y%m%d_%H%M).apk
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v3
+        with:
+          name: lifelink-apk
+          path: "*.apk"
