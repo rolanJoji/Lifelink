@@ -30,7 +30,7 @@ jobs:
 
       - name: Download Android export templates
         run: |
-          wget https://downloads.tuxfamily.org/godotengine/export_templates/4.4.1/Godot_v4.4.1-stable_export_templates.tpz
+          wget https://github.com/godotengine/godot/releases/download/4.4.1-stable/Godot_v4.4.1-stable_export_templates.tpz
           unzip Godot_v4.4.1-stable_export_templates.tpz -d ~/.local/share/godot/templates/4.4.1/
 
       - name: Decode keystore
