@@ -28,6 +28,9 @@ jobs:
       - name: Make Godot executable
         run: chmod +x Godot
 
+      - name: Initialize Godot folders
+        run: ./Godot --headless --quit
+
       - name: Download Android export templates
         run: |
           wget https://github.com/godotengine/godot/releases/download/4.4.1-stable/Godot_v4.4.1-stable_export_templates.tpz
