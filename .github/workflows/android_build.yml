@@ -8,44 +8,59 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
+      - name: Checkout Repository
+        uses: actions/checkout@v4
 
-      - name: Install dependencies
+      - name: Install Java & Android SDK
         run: |
           sudo apt-get update
-          sudo apt-get install -y openjdk-17-jdk wget unzip
+          sudo apt-get install -y openjdk-17-jdk wget unzip tar
 
-      - name: Download Godot 4.4.1
-        run: wget https://github.com/godotengine/godot/releases/download/4.4.1-stable/Godot_v4.4.1-stable_linux.x86_64.zip
-
-      - name: Unzip Godot
-        run: unzip Godot_v4.4.1-stable_linux.x86_64.zip
-
-      - name: Rename Godot executable
-        run: mv Godot_v4.4.1-stable_linux.x86_64 Godot
-
-      - name: Make Godot executable
-        run: chmod +x Godot
-
-      - name: Initialize Godot folders
-        run: ./Godot --headless --quit
-
-      - name: Download Android export templates
+      - name: Download Godot Editor
         run: |
+          wget https://github.com/godotengine/godot/releases/download/4.4.1-stable/Godot_v4.4.1-stable_linux.x86_64.zip
+          unzip Godot_v4.4.1-stable_linux.x86_64.zip
+          mv Godot_v4.4.1-stable_linux.x86_64 godot
+          chmod +x godot
+
+      - name: Prepare Godot Templates
+        run: |
+          mkdir -p ~/.local/share/godot/export_templates/4.4.1.stable
           wget https://github.com/godotengine/godot/releases/download/4.4.1-stable/Godot_v4.4.1-stable_export_templates.tpz
-          unzip Godot_v4.4.1-stable_export_templates.tpz -d ~/.local/share/godot/templates/4.4.1/
+          unzip Godot_v4.4.1-stable_export_templates.tpz -d ~/.local/share/godot/export_templates/4.4.1.stable
 
-      - name: Decode keystore
+      - name: Create Android Export Preset
         run: |
-          echo "$KEYSTORE_B64" | base64 -d > mykeystore.jks
+          mkdir -p android/build
+          cat <<EOT > export_presets.cfg
+          [preset.0]
+          name="Android"
+          platform="Android"
+          runnable=true
+          custom_features=""
+          export_filter="all_resources"
+          include_filter=""
+          exclude_filter=""
+          export_path="android/build/Lifelink.apk"
+          script_export_mode=1
+          script_encryption_key=""
+          
+          [preset.0.options]
+          gradle_build/use_gradle_build=true
+          gradle_build/min_sdk=21
+          gradle_build/target_sdk=34
+          gradle_build/build_tool="default"
+          keystore/release=""
+          keystore/release_user=""
+          keystore/release_password=""
+          EOT
 
-      - name: Build APK
+      - name: Build Android APK
         run: |
-          ./Godot --headless --export "Android" "builds/Lifelink.apk" --sign "mykeystore.jks" "$KEYSTORE_PASSWORD" "$KEY_ALIAS" "$KEY_PASSWORD"
+          ./godot --headless --verbose --export-release "Android" android/build/Lifelink.apk
 
-      - name: Upload APK as artifact
+      - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: Lifelink-APK
-          path: builds/Lifelink.apk
+          name: Lifelink-Android-APK
+          path: android/build/Lifelink.apk
